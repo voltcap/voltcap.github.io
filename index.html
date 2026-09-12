@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0d10" />
+  <meta name="description" content="Art, design projects and moving image work." />
+  <title>Volt — Visual Archive</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <header class="titlebar">
+      <a class="brand" href="#/all" aria-label="Portfolio home">
+        <span class="brand-mark" aria-hidden="true">V/</span>
+        <span>
+          <strong>VOLT</strong>
+          <small>visual archive</small>
+        </span>
+      </a>
+
+      <div class="titlebar-path" id="titlebarPath">~/portfolio</div>
+
+      <div class="titlebar-actions">
+        <button class="icon-button" id="searchButton" type="button" title="Search (Ctrl/⌘ K)" aria-label="Search portfolio">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+        </button>
+        <button class="icon-button" id="themeButton" type="button" title="Toggle theme" aria-label="Toggle colour theme">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.4 8.4 0 1 0 20 15.2Z"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="sidebar" aria-label="Portfolio explorer">
+        <div class="panel-heading">
+          <span>EXPLORER</span>
+          <span class="panel-meta">portfolio</span>
+        </div>
+        <nav id="folderTree" class="folder-tree"></nav>
+
+        <div class="sidebar-note">
+          <span class="pulse" aria-hidden="true"></span>
+          <span>archive online</span>
+        </div>
+      </aside>
+
+      <section class="content-panel">
+        <div class="toolbar">
+          <div class="breadcrumbs" id="breadcrumbs" aria-label="Breadcrumb"></div>
+          <div class="toolbar-actions">
+            <button class="view-button is-active" data-view="grid" type="button" aria-label="Grid view" title="Grid view">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect></svg>
+            </button>
+            <button class="view-button" data-view="list" type="button" aria-label="List view" title="List view">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"></path><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="collection-heading">
+          <div>
+            <p class="eyebrow">CURRENT DIRECTORY</p>
+            <h1 id="collectionTitle">All work</h1>
+          </div>
+          <p class="collection-count" id="collectionCount"></p>
+        </div>
+
+        <div id="gallery" class="gallery" aria-live="polite"></div>
+      </section>
+
+      <aside class="inspector" id="inspector" aria-label="Artwork details">
+        <div class="panel-heading">
+          <span>INSPECTOR</span>
+          <span class="panel-meta">metadata</span>
+        </div>
+        <div id="inspectorContent" class="inspector-content">
+          <div class="empty-inspector">
+            <div class="empty-cube" aria-hidden="true"></div>
+            <p>Select a file to inspect its metadata.</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="statusbar">
+      <span id="statusPath">~/portfolio/all</span>
+      <span class="status-spacer"></span>
+      <span id="statusSelection">0 selected</span>
+      <span>UTF-8</span>
+      <span>STATIC</span>
+    </footer>
+  </div>
+
+  <div class="viewer" id="viewer" aria-hidden="true">
+    <button class="viewer-backdrop" id="viewerBackdrop" type="button" tabindex="-1" aria-label="Close viewer"></button>
+    <div class="viewer-window" role="dialog" aria-modal="true" aria-labelledby="viewerTitle">
+      <div class="viewer-bar">
+        <div class="viewer-file" id="viewerFile"></div>
+        <button class="icon-button" id="viewerClose" type="button" aria-label="Close viewer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+        </button>
+      </div>
+      <div class="viewer-stage" id="viewerStage"></div>
+      <div class="viewer-caption">
+        <div>
+          <p class="eyebrow" id="viewerKind"></p>
+          <h2 id="viewerTitle"></h2>
+        </div>
+        <p id="viewerDescription"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="command-palette" id="commandPalette" aria-hidden="true">
+    <button class="palette-backdrop" id="paletteBackdrop" type="button" tabindex="-1" aria-label="Close search"></button>
+    <div class="palette-window" role="dialog" aria-modal="true" aria-label="Search portfolio">
+      <div class="palette-input-wrap">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg>
+        <input id="searchInput" type="search" autocomplete="off" placeholder="Search files, tags, tools…" aria-label="Search files" />
+        <kbd>ESC</kbd>
+      </div>
+      <div class="palette-results" id="paletteResults"></div>
+    </div>
+  </div>
+
+  <script src="js/portfolio-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
