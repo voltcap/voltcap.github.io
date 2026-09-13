@@ -3,6 +3,7 @@
 
   const data = window.PORTFOLIO;
   if (!data) throw new Error('Portfolio data not found.');
+  const visibleItems = data.items.filter((item) => item.kind !== 'Video' || item.video || item.embed);
 
   const state = {
     folder: 'all',
@@ -15,6 +16,7 @@
   const els = {
     root: document.documentElement,
     folderTree: $('#folderTree'),
+    mobileFolders: $('#mobileFolders'),
     profileBio: $('#profileBio'),
     highlights: $('#highlights'),
     gallery: $('#gallery'),
@@ -45,7 +47,8 @@
 
   const icons = {
     folder: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h6l1.8 2H20.5v9.5a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5V6.5Z"></path></svg>`,
-    archive: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v13H4zM3 3.5h18v3H3zM9 11h6"></path></svg>`
+    archive: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v13H4zM3 3.5h18v3H3zM9 11h6"></path></svg>`,
+    star: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.4 5.4 5.6.5-4.2 3.8 1.2 5.5-4.9-2.8-4.9 2.8 1.2-5.5L4 8.9l5.6-.5L12 3Z"></path></svg>`
   };
 
   function safe(value = '') {
@@ -62,7 +65,11 @@
   }
 
   function itemsForFolder(id) {
-    return id === 'all' ? data.items : data.items.filter((item) => item.folder === id);
+    if (id === 'all') return visibleItems;
+    if (id === 'highlights') return highlightFiles
+      .map((file) => visibleItems.find((item) => item.file === file))
+      .filter(Boolean);
+    return visibleItems.filter((item) => item.folder === id);
   }
 
   function initials(item) {
@@ -116,7 +123,7 @@
   }
 
   function renderFolderTree() {
-    els.folderTree.innerHTML = data.folders.map((folder) => {
+    const folderButtons = data.folders.map((folder) => {
       const count = itemsForFolder(folder.id).length;
       return `
         <button class="folder-button ${folder.id === state.folder ? 'is-active' : ''}" data-folder="${safe(folder.id)}" type="button">
@@ -125,8 +132,10 @@
           <span class="folder-count">${count}</span>
         </button>`;
     }).join('');
+    els.folderTree.innerHTML = folderButtons;
+    els.mobileFolders.innerHTML = folderButtons;
 
-    els.folderTree.querySelectorAll('[data-folder]').forEach((button) => {
+    document.querySelectorAll('#folderTree [data-folder], #mobileFolders [data-folder]').forEach((button) => {
       button.addEventListener('click', () => navigate(button.dataset.folder));
     });
   }
@@ -137,8 +146,12 @@
 
   function renderHighlights() {
     if (!els.highlights) return;
+    if (state.folder === 'highlights') {
+      els.highlights.innerHTML = '';
+      return;
+    }
     const items = highlightFiles
-      .map((file) => data.items.find((item) => item.file === file))
+      .map((file) => visibleItems.find((item) => item.file === file))
       .filter(Boolean);
 
     els.highlights.innerHTML = `
@@ -147,9 +160,9 @@
         ${items.map((item) => `
           <button class="highlight-card" data-highlight="${safe(item.id)}" type="button">
             <span class="highlight-media">${cardMedia(item)}</span>
-            <span class="highlight-copy">
-              <strong>${safe(item.title)}</strong>
-              <span>${safe(item.kind)}</span>
+          <span class="highlight-copy">
+            <strong>${safe(item.title)}</strong>
+            <span>${safe(item.kind)}</span>
             </span>
           </button>
         `).join('')}
@@ -158,7 +171,7 @@
 
     els.highlights.querySelectorAll('[data-highlight]').forEach((button) => {
       button.addEventListener('click', () => {
-        const item = data.items.find((entry) => entry.id === button.dataset.highlight);
+        const item = visibleItems.find((entry) => entry.id === button.dataset.highlight);
         if (!item) return;
         navigate(item.folder);
         openViewer(item.id);
@@ -170,7 +183,7 @@
   function renderHeading() {
     const folder = folderById(state.folder);
     const count = itemsForFolder(state.folder).length;
-    els.collectionTitle.textContent = folder.id === 'all' ? 'All work' : folder.label;
+    els.collectionTitle.textContent = folder.id === 'all' ? 'All Work' : folder.label;
     els.collectionCount.textContent = `${String(count).padStart(2, '0')} ${count === 1 ? 'file' : 'files'}`;
     els.titlebarPath.textContent = folder.path;
     els.statusPath.textContent = folder.path;
@@ -191,7 +204,6 @@
         </div>
         <div class="file-meta">
           <div class="file-name"><strong>${safe(item.title)}</strong><span>${safe(item.year)}</span></div>
-          <p class="file-title">${safe(item.file)}</p>
         </div>
       </article>
     `).join('');
@@ -228,13 +240,13 @@
           video.pause();
         }
       });
-    }, { root: els.gallery.closest('.content-panel'), rootMargin: '180px' });
+    }, { root: null, rootMargin: '180px' });
 
     videos.forEach((video) => observer.observe(video));
   }
 
   function renderInspector() {
-    const item = data.items.find((entry) => entry.id === state.selected);
+    const item = visibleItems.find((entry) => entry.id === state.selected);
     els.statusSelection.textContent = item ? '1 selected' : '0 selected';
 
     if (!item) {
@@ -246,13 +258,11 @@
       return;
     }
 
-    const folder = folderById(item.folder);
     els.inspectorContent.innerHTML = `
       <div class="inspector-hero" style="--preview-accent:${safe(item.accent || '')}">${item.kind === 'Video' ? videoElement(item, { controls: true, preload: 'metadata' }) : mediaThumb(item)}</div>
       <div class="inspector-block">
         <p class="eyebrow">${safe(item.kind)}</p>
         <h2 class="inspector-title">${safe(item.title)}</h2>
-        <div class="inspector-file">${safe(folder.path.replace('~/', ''))}/${safe(item.file)}</div>
       </div>
       <div class="inspector-block"><p class="inspector-description">${safe(item.description)}</p></div>
       <div class="inspector-block">
@@ -282,6 +292,7 @@
     if (updateHash) history.replaceState(null, '', `#/${folder}`);
     renderFolderTree();
     renderHeading();
+    renderHighlights();
     renderGallery();
     renderInspector();
   }
@@ -302,12 +313,12 @@
   }
 
   function openViewer(id) {
-    const item = data.items.find((entry) => entry.id === id);
+    const item = visibleItems.find((entry) => entry.id === id);
     if (!item) return;
     state.selected = id;
     renderGallery();
     renderInspector();
-    els.viewerFile.textContent = item.file;
+    els.viewerFile.textContent = item.title;
     els.viewerKind.textContent = item.kind;
     els.viewerTitle.textContent = item.title;
     els.viewerDescription.textContent = item.description;
@@ -333,8 +344,8 @@
 
   function searchResults(query) {
     const q = query.trim().toLowerCase();
-    if (!q) return data.items;
-    return data.items.filter((item) => [
+    if (!q) return visibleItems;
+    return visibleItems.filter((item) => [
       item.title,
       item.file,
       item.kind,
@@ -354,13 +365,13 @@
     els.paletteResults.innerHTML = results.map((item, index) => `
       <button class="palette-result ${index === 0 ? 'is-active' : ''}" data-result="${safe(item.id)}" type="button">
         <span class="result-thumb" style="--preview-accent:${safe(item.accent || '')}">${mediaThumb(item)}</span>
-        <span class="result-main"><strong>${safe(item.title)}</strong><span>${safe(item.file)}</span></span>
+        <span class="result-main"><strong>${safe(item.title)}</strong><span>${safe(item.kind)} · ${safe(item.year)}</span></span>
         <span class="result-kind">${safe(item.kind)}</span>
       </button>
     `).join('');
     els.paletteResults.querySelectorAll('[data-result]').forEach((button) => {
       button.addEventListener('click', () => {
-        const item = data.items.find((entry) => entry.id === button.dataset.result);
+        const item = visibleItems.find((entry) => entry.id === button.dataset.result);
         if (!item) return;
         closeSearch();
         navigate(item.folder);

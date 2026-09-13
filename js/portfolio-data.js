@@ -16,6 +16,7 @@ window.PORTFOLIO = {
 
   folders: [
     { id: "all", label: "All Work", path: "~/portfolio", icon: "archive" },
+    { id: "highlights", label: "Highlights", path: "~/portfolio/highlights", icon: "star" },
     { id: "ads", label: "Ads", path: "~/portfolio/ads", icon: "folder" },
     { id: "posters", label: "Posters", path: "~/portfolio/posters", icon: "folder" },
     { id: "illustrations", label: "Illustrations", path: "~/portfolio/illustrations", icon: "folder" },
