@@ -15,6 +15,7 @@
   const els = {
     root: document.documentElement,
     folderTree: $('#folderTree'),
+    profileBio: $('#profileBio'),
     gallery: $('#gallery'),
     collectionTitle: $('#collectionTitle'),
     collectionCount: $('#collectionCount'),
@@ -67,9 +68,19 @@
 
   function mediaThumb(item) {
     if (item.thumb) {
-      return `<img src="${safe(item.thumb)}" alt="" loading="lazy" decoding="async" />`;
+      return `<img src="${safe(item.thumb)}" alt="" loading="lazy" decoding="async" fetchpriority="low" />`;
     }
     return `<div class="preview-placeholder"><span class="placeholder-glyph">${safe(initials(item))}</span></div>`;
+  }
+
+  function cardMedia(item) {
+    if (item.kind === 'Video' && item.video) {
+      return `
+        <video class="preview-video" data-src="${safe(item.video)}" muted loop playsinline preload="none">
+          <source data-src="${safe(item.video)}" type="${safe(videoType(item.video))}" />
+        </video>`;
+    }
+    return mediaThumb(item);
   }
 
   function videoType(src = '') {
@@ -100,6 +111,10 @@
     });
   }
 
+  function renderProfile() {
+    if (els.profileBio) els.profileBio.textContent = data.profile?.bio || '';
+  }
+
   function renderHeading() {
     const folder = folderById(state.folder);
     const count = itemsForFolder(state.folder).length;
@@ -119,7 +134,7 @@
     els.gallery.innerHTML = items.map((item) => `
       <article class="file-card ${state.selected === item.id ? 'is-selected' : ''}" data-id="${safe(item.id)}" tabindex="0" style="--preview-accent:${safe(item.accent || '')}">
         <div class="file-preview">
-          ${mediaThumb(item)}
+          ${cardMedia(item)}
           <span class="file-kind">${safe(item.kind)}</span>
           ${item.kind === 'Video' ? '<span class="play-glyph" aria-hidden="true"></span>' : ''}
         </div>
@@ -139,6 +154,43 @@
         if (event.key === ' ') { event.preventDefault(); select(); }
       });
     });
+    hydrateVideoPreviews();
+  }
+
+  function hydrateVideoPreviews() {
+    const videos = [...els.gallery.querySelectorAll('.preview-video')];
+    if (!videos.length) return;
+
+    const loadVideo = (video) => {
+      if (video.dataset.loaded) return;
+      const source = video.querySelector('source');
+      if (source?.dataset.src) source.src = source.dataset.src;
+      if (video.dataset.src) video.src = video.dataset.src;
+      video.dataset.loaded = 'true';
+      video.load();
+    };
+
+    if (!('IntersectionObserver' in window)) {
+      videos.forEach((video) => {
+        loadVideo(video);
+        video.play().catch(() => {});
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const video = entry.target;
+        if (entry.isIntersecting) {
+          loadVideo(video);
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    }, { root: els.gallery.closest('.content-panel'), rootMargin: '180px' });
+
+    videos.forEach((video) => observer.observe(video));
   }
 
   function renderInspector() {
@@ -325,6 +377,7 @@
   });
 
   setTheme(state.theme);
+  renderProfile();
   const initialFolder = location.hash.replace(/^#\//, '') || 'all';
   navigate(initialFolder, false);
 })();
