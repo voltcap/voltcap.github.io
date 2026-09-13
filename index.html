@@ -10,13 +10,6 @@
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
-  <div class="mascot-knight" aria-hidden="true">
-    <pre>  /\
- [==]
- /||\
-  /\
- _||_</pre>
-  </div>
 
   <div class="app-shell">
     <header class="titlebar">
@@ -48,10 +41,6 @@
         </div>
         <nav id="folderTree" class="folder-tree"></nav>
 
-        <div class="profile-card">
-          <p id="profileBio"></p>
-        </div>
-
         <div class="sidebar-note">
           <span class="pulse" aria-hidden="true"></span>
           <span>archive online</span>
@@ -78,6 +67,12 @@
           </div>
           <p class="collection-count" id="collectionCount"></p>
         </div>
+
+        <section class="main-intro" aria-label="Artist biography">
+          <p id="profileBio"></p>
+        </section>
+
+        <section class="highlights" id="highlights" aria-label="Highlighted work"></section>
 
         <div id="gallery" class="gallery" aria-live="polite"></div>
       </section>

@@ -16,6 +16,7 @@
     root: document.documentElement,
     folderTree: $('#folderTree'),
     profileBio: $('#profileBio'),
+    highlights: $('#highlights'),
     gallery: $('#gallery'),
     collectionTitle: $('#collectionTitle'),
     collectionCount: $('#collectionCount'),
@@ -39,6 +40,8 @@
     searchInput: $('#searchInput'),
     paletteResults: $('#paletteResults')
   };
+
+  const highlightFiles = ['cap-monitor.webp', 'stars-texture3.webp', 'console-ff.webp', 'wow.mp4'];
 
   const icons = {
     folder: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h6l1.8 2H20.5v9.5a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5V6.5Z"></path></svg>`,
@@ -73,11 +76,28 @@
     return `<div class="preview-placeholder"><span class="placeholder-glyph">${safe(initials(item))}</span></div>`;
   }
 
-  function cardMedia(item) {
-    if (item.kind === 'Video' && item.video) {
+  function videoElement(item, options = {}) {
+    if (!item.video) {
+      return `<div class="preview-placeholder is-unavailable"><span>No preview</span></div>`;
+    }
+    const controls = options.controls ? ' controls' : '';
+    const autoplay = options.autoplay ? ' autoplay' : '';
+    const loop = options.loop ? ' loop' : '';
+    const muted = options.muted ? ' muted' : '';
+    const preload = options.preload || 'metadata';
+    const poster = item.thumb ? ` poster="${safe(item.thumb)}"` : '';
+    return `
+        <video class="preview-video"${controls}${autoplay}${loop}${muted} playsinline preload="${safe(preload)}"${poster}>
+          <source src="${safe(item.video)}" type="${safe(videoType(item.video))}" />
+        </video>`;
+  }
+
+  function cardMedia(item, options = {}) {
+    if (item.kind === 'Video') {
+      if (!item.video) return `<div class="preview-placeholder is-unavailable"><span>No video file</span></div>`;
       return `
-        <video class="preview-video" data-src="${safe(item.video)}" muted loop playsinline preload="none">
-          <source data-src="${safe(item.video)}" type="${safe(videoType(item.video))}" />
+        <video class="preview-video" muted loop playsinline preload="metadata"${item.thumb ? ` poster="${safe(item.thumb)}"` : ''}>
+          <source src="${safe(item.video)}" type="${safe(videoType(item.video))}" />
         </video>`;
     }
     return mediaThumb(item);
@@ -115,6 +135,38 @@
     if (els.profileBio) els.profileBio.textContent = data.profile?.bio || '';
   }
 
+  function renderHighlights() {
+    if (!els.highlights) return;
+    const items = highlightFiles
+      .map((file) => data.items.find((item) => item.file === file))
+      .filter(Boolean);
+
+    els.highlights.innerHTML = `
+      <div class="section-label">Highlights</div>
+      <div class="highlight-grid">
+        ${items.map((item) => `
+          <button class="highlight-card" data-highlight="${safe(item.id)}" type="button">
+            <span class="highlight-media">${cardMedia(item)}</span>
+            <span class="highlight-copy">
+              <strong>${safe(item.title)}</strong>
+              <span>${safe(item.kind)}</span>
+            </span>
+          </button>
+        `).join('')}
+      </div>
+    `;
+
+    els.highlights.querySelectorAll('[data-highlight]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const item = data.items.find((entry) => entry.id === button.dataset.highlight);
+        if (!item) return;
+        navigate(item.folder);
+        openViewer(item.id);
+      });
+    });
+    hydrateVideoPreviews(els.highlights);
+  }
+
   function renderHeading() {
     const folder = folderById(state.folder);
     const count = itemsForFolder(state.folder).length;
@@ -136,11 +188,10 @@
         <div class="file-preview">
           ${cardMedia(item)}
           <span class="file-kind">${safe(item.kind)}</span>
-          ${item.kind === 'Video' ? '<span class="play-glyph" aria-hidden="true"></span>' : ''}
         </div>
         <div class="file-meta">
-          <div class="file-name"><strong>${safe(item.file)}</strong><span>${safe(item.year)}</span></div>
-          <p class="file-title">${safe(item.title)}</p>
+          <div class="file-name"><strong>${safe(item.title)}</strong><span>${safe(item.year)}</span></div>
+          <p class="file-title">${safe(item.file)}</p>
         </div>
       </article>
     `).join('');
@@ -154,25 +205,15 @@
         if (event.key === ' ') { event.preventDefault(); select(); }
       });
     });
-    hydrateVideoPreviews();
+    hydrateVideoPreviews(els.gallery);
   }
 
-  function hydrateVideoPreviews() {
-    const videos = [...els.gallery.querySelectorAll('.preview-video')];
+  function hydrateVideoPreviews(root = document) {
+    const videos = [...root.querySelectorAll('.preview-video:not([controls])')];
     if (!videos.length) return;
-
-    const loadVideo = (video) => {
-      if (video.dataset.loaded) return;
-      const source = video.querySelector('source');
-      if (source?.dataset.src) source.src = source.dataset.src;
-      if (video.dataset.src) video.src = video.dataset.src;
-      video.dataset.loaded = 'true';
-      video.load();
-    };
 
     if (!('IntersectionObserver' in window)) {
       videos.forEach((video) => {
-        loadVideo(video);
         video.play().catch(() => {});
       });
       return;
@@ -182,7 +223,6 @@
       entries.forEach((entry) => {
         const video = entry.target;
         if (entry.isIntersecting) {
-          loadVideo(video);
           video.play().catch(() => {});
         } else {
           video.pause();
@@ -208,7 +248,7 @@
 
     const folder = folderById(item.folder);
     els.inspectorContent.innerHTML = `
-      <div class="inspector-hero" style="--preview-accent:${safe(item.accent || '')}">${mediaThumb(item)}</div>
+      <div class="inspector-hero" style="--preview-accent:${safe(item.accent || '')}">${item.kind === 'Video' ? videoElement(item, { controls: true, preload: 'metadata' }) : mediaThumb(item)}</div>
       <div class="inspector-block">
         <p class="eyebrow">${safe(item.kind)}</p>
         <h2 class="inspector-title">${safe(item.title)}</h2>
@@ -224,7 +264,7 @@
         </dl>
       </div>
       <div class="inspector-block"><div class="tag-list">${(item.tags || []).map((tag) => `<span class="tag">#${safe(tag)}</span>`).join('')}</div></div>
-      <div class="inspector-block"><button class="open-button" id="inspectorOpen" type="button">OPEN FILE ↗</button></div>
+      <div class="inspector-block"><button class="open-button" id="inspectorOpen" type="button">${item.kind === 'Video' ? 'OPEN VIDEO' : 'OPEN FILE'}</button></div>
     `;
     $('#inspectorOpen')?.addEventListener('click', () => openViewer(item.id));
   }
@@ -252,7 +292,7 @@
         return `<iframe src="${safe(item.embed)}" title="${safe(item.title)}" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
       }
       if (item.video) {
-        return `<video controls playsinline preload="metadata"><source src="${safe(item.video)}" type="${safe(videoType(item.video))}" />Your browser cannot play this video inline. <a href="${safe(item.video)}">Open the video file</a>.</video>`;
+        return videoElement(item, { controls: true, preload: 'metadata' });
       }
     }
     if (item.src) {
@@ -378,6 +418,7 @@
 
   setTheme(state.theme);
   renderProfile();
+  renderHighlights();
   const initialFolder = location.hash.replace(/^#\//, '') || 'all';
   navigate(initialFolder, false);
 })();

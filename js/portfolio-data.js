@@ -42,13 +42,13 @@ window.PORTFOLIO = {
       id: "ads-console-ff-webp",
       folder: "ads",
       file: "console-ff.webp",
-      title: "Console Ff",
+      title: "Console FF",
       year: "2026",
       kind: "Ad",
       medium: "Advertising / Digital Design",
       tools: ["Digital"],
       tags: ["ad", "campaign", "design", "console"],
-      description: "Console Ff, archived in the ads collection.",
+      description: "Console FF, archived in the ads collection.",
       thumb: "assets/thumbs/ads-console-ff-webp.jpg",
       src: "assets/ads/console-ff.webp"
     },
@@ -106,7 +106,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion", "arthur", "waves"],
       description: "A1111 Wave Animation, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-arthur-waves-1-mp4.jpg",
       video: "assets/videos/arthur-waves-1.mp4",
       embed: ""
     },
@@ -121,7 +121,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion", "capucine", "augustus"],
       description: "Capucine and Augustus Collage Animation, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-capucine-augustus-mov.jpg",
       video: "assets/videos/capucine-augustus.mov",
       embed: ""
     },
@@ -136,7 +136,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion", "forest1"],
       description: "A1111 Forest Animation, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-forest1-mp4.jpg",
       video: "assets/videos/forest1.mp4",
       embed: ""
     },
@@ -151,7 +151,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion", "img", "2691"],
       description: "Enheduanna Short Historical Documentary, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-img-2691-mov.jpg",
       video: "assets/videos/IMG_2691.mp4",
       embed: ""
     },
@@ -166,7 +166,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion", "img", "2693"],
       description: "The Fall Vertical Shot Cinematography, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-img-2693-mov.jpg",
       video: "assets/videos/IMG_2693.mp4",
       embed: ""
     },
@@ -181,7 +181,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion", "img", "2697"],
       description: "Lawrence of Arabia Vertical Shot Cinematography, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-img-2697-mp4.jpg",
       video: "assets/videos/IMG_2697 (1).mp4",
       embed: ""
     },
@@ -196,7 +196,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion", "patrician"],
       description: "Patrician Pixel Animation, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-patrician-mp4.jpg",
       video: "assets/videos/patrician.mp4",
       embed: ""
     },
@@ -211,7 +211,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion"],
       description: "A1111 Woman Animation, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-w1-mp4.jpg",
       video: "assets/videos/w1.mp4",
       embed: ""
     },
@@ -226,7 +226,7 @@ window.PORTFOLIO = {
       tools: ["Digital"],
       tags: ["video", "animation", "motion", "wow"],
       description: "A1111 Experimental Animation, archived in the videos collection.",
-      thumb: "",
+      thumb: "assets/thumbs/videos-wow-mp4.jpg",
       video: "assets/videos/wow.mp4",
       embed: ""
     },
