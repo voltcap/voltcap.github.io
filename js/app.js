@@ -99,11 +99,11 @@
         </video>`;
   }
 
-  function cardMedia(item, options = {}) {
+  function cardMedia(item) {
     if (item.kind === 'Video') {
       if (!item.video) return `<div class="preview-placeholder is-unavailable"><span>No video file</span></div>`;
       return `
-        <video class="preview-video" muted loop playsinline preload="metadata"${item.thumb ? ` poster="${safe(item.thumb)}"` : ''}>
+        <video class="preview-video" muted loop playsinline preload="none"${item.thumb ? ` poster="${safe(item.thumb)}"` : ''}>
           <source src="${safe(item.video)}" type="${safe(videoType(item.video))}" />
         </video>`;
     }
@@ -146,7 +146,7 @@
 
   function renderHighlights() {
     if (!els.highlights) return;
-    if (state.folder === 'highlights') {
+    if (state.folder !== 'all') {
       els.highlights.innerHTML = '';
       return;
     }
