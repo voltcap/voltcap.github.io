@@ -4,7 +4,7 @@ A lightweight, file-explorer-style art portfolio built for GitHub Pages.
 
 ## Features
 
-- Folder-style navigation for Posters, Illustrations, Projects and Videos
+- Folder-style navigation for Ads, Posters, Illustrations, Stable Diffusion and Videos
 - Grid and list views
 - Inspector panel with artwork metadata
 - Full-screen media viewer
@@ -24,9 +24,10 @@ Suggested structure:
 
 ```text
 assets/
+├── ads/
 ├── posters/
 ├── illustrations/
-├── projects/
+├── stable-diffusion/
 ├── videos/
 └── thumbs/
 ```
@@ -87,6 +88,7 @@ GitHub will provide the public Pages address after deployment.
 - Prefer WebP or AVIF for artwork thumbnails.
 - Keep thumbnails around 100–250 KB when practical.
 - Do not put large uncompressed videos directly in the repository.
+- GitHub blocks individual files over 100 MB. The imported `assets/videos/2022-03-05-2-1.avi` should be compressed or hosted externally before pushing to GitHub.
 - `loading="lazy"` and `decoding="async"` are already applied to thumbnails.
 - There are no third-party libraries or remote font requests.
 

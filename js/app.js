@@ -72,6 +72,18 @@
     return `<div class="preview-placeholder"><span class="placeholder-glyph">${safe(initials(item))}</span></div>`;
   }
 
+  function videoType(src = '') {
+    const ext = src.split('.').pop().toLowerCase();
+    const types = {
+      mp4: 'video/mp4',
+      m4v: 'video/mp4',
+      mov: 'video/quicktime',
+      webm: 'video/webm',
+      avi: 'video/x-msvideo'
+    };
+    return types[ext] || '';
+  }
+
   function renderFolderTree() {
     els.folderTree.innerHTML = data.folders.map((folder) => {
       const count = itemsForFolder(folder.id).length;
@@ -188,7 +200,7 @@
         return `<iframe src="${safe(item.embed)}" title="${safe(item.title)}" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
       }
       if (item.video) {
-        return `<video src="${safe(item.video)}" controls playsinline preload="metadata"></video>`;
+        return `<video controls playsinline preload="metadata"><source src="${safe(item.video)}" type="${safe(videoType(item.video))}" />Your browser cannot play this video inline. <a href="${safe(item.video)}">Open the video file</a>.</video>`;
       }
     }
     if (item.src) {
