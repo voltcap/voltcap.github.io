@@ -11,7 +11,9 @@ A lightweight, file-explorer-style art portfolio built for GitHub Pages.
 - `Ctrl/⌘ + K` command-palette search
 - Dark/light themes stored locally in the browser
 - Hash-based folder URLs (`#/posters`, `#/videos`, etc.)
-- Lazy-loaded images and video players that are created only when opened
+- Lazy-loaded images, poster-first video previews, and native inspector video controls
+- Purple and turquoise terminal styling, with a pausable Matrix rain effect
+- Homepage biography and highlights, with a dedicated Highlights collection
 - Responsive mobile layout
 - No framework, package manager, build step, external font or JavaScript dependency
 - Reduced-motion support
@@ -70,7 +72,7 @@ For larger videos, use a lazy-loaded embed instead of committing huge media file
 embed: "https://www.youtube-nocookie.com/embed/VIDEO_ID"
 ```
 
-The iframe/video element is not created until the viewer is opened, so videos do not slow initial page load.
+Gallery videos display posters without assigning a media source until they enter the viewport. They pause offscreen, when a modal is open, or when visual effects are paused. Reduced-motion and data-saving preferences disable automatic previews; native inspector and viewer controls remain available. Embeds are created only when opened.
 
 ## Publish with GitHub Pages
 
@@ -88,7 +90,7 @@ GitHub will provide the public Pages address after deployment.
 - Prefer WebP or AVIF for artwork thumbnails.
 - Keep thumbnails around 100–250 KB when practical.
 - Do not put large uncompressed videos directly in the repository.
-- GitHub blocks individual files over 100 MB. The imported `assets/videos/2022-03-05-2-1.avi` should be compressed or hosted externally before pushing to GitHub.
+- The source AVI has no web-ready media file and is excluded from the visible collection until a playable source is provided.
 - `loading="lazy"` and `decoding="async"` are already applied to thumbnails.
 - There are no third-party libraries or remote font requests.
 
